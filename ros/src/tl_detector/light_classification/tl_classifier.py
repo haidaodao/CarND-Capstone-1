@@ -14,7 +14,7 @@ class TLClassifier(object):
         height, width, channels = bb_image.shape
 
 
-        // Crop respective red, yellow, and green sections
+        # Crop respective red, yellow, and green sections
         red_area = bb_image[0:height//3, 0:width]
         yellow_area = bb_image[height//3:2*height//3, 0:width]
         green_area = bb_image[2*height//3:height, 0:width]

@@ -11,6 +11,8 @@ import tf
 import cv2
 import yaml
 
+
+
 from  scipy.spatial import KDTree
 import math
 import numpy as np
@@ -48,7 +50,8 @@ class TLDetector(object):
         config_string = rospy.get_param("/traffic_light_config")
         self.config = yaml.load(config_string)
 
-        self.simulator_mode = rospy.get_param("/simulator_mode")
+        #self.simulator_mode = rospy.get_param("/simulator_mode")
+        self.simulator_mode = True
 
         self.upcoming_red_light_pub = rospy.Publisher('/traffic_waypoint', Int32, queue_size=1)
 
@@ -172,7 +175,7 @@ class TLDetector(object):
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
 
         """
-        #return light.state
+        return light.state
 
         if(not self.has_image):
             self.prev_light_loc = None
