@@ -37,15 +37,15 @@ class WaypointUpdater(object):
         #rospy.Subscriber('/obstacle_waypoint', Int32, self.obstacle_wp_cp)
         # TODO: Add a subscriber for /traffic_waypoint and /obstacle_waypoint below
 
-
+        self.final_waypoints_pub = rospy.Publisher('final_waypoints', Lane, queue_size=1)
         # TODO: Add other member variables you need below
         self.base_lane = None
         self.pose = None
         self.stopline_wp_idx = -1
         self.waypoints_2d = None
-        self.waypoints_tree = None
+        self.waypoint_tree = None
 
-        self.final_waypoints_pub = rospy.Publisher('final_waypoints', Lane, queue_size=1)
+
 
         self.loop()
 
@@ -62,7 +62,7 @@ class WaypointUpdater(object):
     def get_closest_waypoint_idx(self):
         x = self.pose.pose.position.x
         y = self.pose.pose.position.y
-        closest_idx = self.waypoints_tree.query([x, y], 1)[1]
+        closest_idx = self.waypoint_tree.query([x, y], 1)[1]
 
         # Check if closest behind vehicle
         closest_coord = self.waypoints_2d[closest_idx]
@@ -122,7 +122,7 @@ class WaypointUpdater(object):
         self.base_lane = waypoints
         if not self.waypoints_2d:
             self.waypoints_2d = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in waypoints.waypoints]
-            self.waypoints_tree = KDTree(self.waypoints_2d)
+            self.waypoint_tree = KDTree(self.waypoints_2d)
 
     def traffic_cb(self, msg):
         self.stopline_wp_idx = msg.data
@@ -139,7 +139,7 @@ class WaypointUpdater(object):
 
     def distance(self, waypoints, wp1, wp2):
         dist = 0
-        
+
         dl = lambda a, b: math.sqrt((a.x-b.x)**2 + (a.y-b.y)**2  + (a.z-b.z)**2)
         for i in range(wp1, wp2+1):
             dist += dl(waypoints[wp1].pose.pose.position, waypoints[i].pose.pose.position)
