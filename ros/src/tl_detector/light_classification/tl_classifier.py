@@ -7,10 +7,11 @@ from sensor_msgs.msg import Image
 
 class TLClassifier(object):
     def __init__(self):
-        self.cropped_tl_bb_pub = rospy.Publisher('/cropped_bb', Image, queue_size=1)
-        self.bridge = CvBridge()
+        #self.cropped_tl_bb_pub = rospy.Publisher('/cropped_bb', Image, queue_size=1)
+        #self.bridge = CvBridge()
+        pass
 
-    def detect_light_state(self, bb_image):
+    '''def detect_light_state(self, bb_image):
         height, width, channels = bb_image.shape
 
 
@@ -71,10 +72,10 @@ class TLClassifier(object):
             print ('Warning! Unable to determine Light state')
 
         return state
+    '''
 
 
-
-    def get_classification(self, image, TL_BB_list, simulator_mode):
+    def get_classification(self, image):
         """Determines the color of the traffic light in the image
 
         Args:
@@ -85,7 +86,8 @@ class TLClassifier(object):
 
         """
          # if list is empty, return UNKNOWN
-        if not TL_BB_list:
+
+        '''if not TL_BB_list:
             return TrafficLight.UNKNOWN
 
         else:
@@ -94,44 +96,44 @@ class TLClassifier(object):
             xmax = TL_BB_list[0].xmax
             ymin = TL_BB_list[0].ymin
             ymax = TL_BB_list[0].ymax
-
+        '''
             # cropped image
-            bb_image = image[ymin:ymax, xmin:xmax]
+            #bb_image = image[ymin:ymax, xmin:xmax]
 
             # Check if running in simulator mode
-            if int(simulator_mode) == 1:
+            #if int(simulator_mode) == 1:
 
-                light = TrafficLight.UNKNOWN
-                # HSV allows count color within hue range
-                hsv_img = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+            light = TrafficLight.UNKNOWN
+            # HSV allows count color within hue range
+            hsv_img = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-                RED_MIN1 = np.array([0, 100, 100], np.unit8)
-                RED_MAX1 = np.array([10, 255, 255], np.uint8)
+            RED_MIN1 = np.array([0, 100, 100], np.unit8)
+            RED_MAX1 = np.array([10, 255, 255], np.uint8)
 
-                RED_MIN2 = np.array([160, 100, 100], np.unit8)
-                RED_MAX2 = np.array([179, 255, 255], np.uint8)
+            RED_MIN2 = np.array([160, 100, 100], np.unit8)
+            RED_MAX2 = np.array([179, 255, 255], np.uint8)
 
-                red_mask1 = cv2.inRange(hsv_img, RED_MIN1, RED_MAX1)
-                red_mask2 = cv2.inRange(hsv_img, RED_MIN2, RED_MAX2)
-                if cv2.countNonZero(red_mask1) + cvcv2.countNonZero(red_mask1) > 40:
-                    print("RED!")
-                    light = TrafficLight.RED
+            red_mask1 = cv2.inRange(hsv_img, RED_MIN1, RED_MAX1)
+            red_mask2 = cv2.inRange(hsv_img, RED_MIN2, RED_MAX2)
+            if cv2.countNonZero(red_mask1) + cvcv2.countNonZero(red_mask1) > 40:
+                print("RED!")
+                light = TrafficLight.RED
 
-                YELLOW_MIN = np.array([40.0/360*255, 100, 100], np.unit8)
-                YELLOW_MAX = np.array([66.0/360*255, 255, 255], np.uint8)
+            YELLOW_MIN = np.array([40.0/360*255, 100, 100], np.unit8)
+            YELLOW_MAX = np.array([66.0/360*255, 255, 255], np.uint8)
 
-                yellow_mask = cv2.inRange(hsv_img, YELLOW_MIN, YELLOW_MAX)
-                if cv2.countNonZero(yellow_mask) > 30:
-                    print("YELLOW!")
-                    light = TrafficLight.YELLOW
+            yellow_mask = cv2.inRange(hsv_img, YELLOW_MIN, YELLOW_MAX)
+            if cv2.countNonZero(yellow_mask) > 30:
+                print("YELLOW!")
+                light = TrafficLight.YELLOW
 
-                GREEN_MIN = np.array([40.0/360*255, 100, 100], np.unit8)
-                GREEN_MAX = np.array([66.0/360*255, 255, 255], np.uint8)
+            GREEN_MIN = np.array([40.0/360*255, 100, 100], np.unit8)
+            GREEN_MAX = np.array([66.0/360*255, 255, 255], np.uint8)
 
-                green_mask = cv2.inRange(hsv_img, GREEN_MIN, GREEN_MAX)
-                if cv2.countNonZero(green_mask) > 30:
-                    light = TrafficLight.GREEN
+            green_mask = cv2.inRange(hsv_img, GREEN_MIN, GREEN_MAX)
+            if cv2.countNonZero(green_mask) > 30:
+                light = TrafficLight.GREEN
 
-                return light
-            else:
-                return self.detect_light_state(bb_image)
+            return light
+            #else:
+            #    return self.detect_light_state(bb_image)
