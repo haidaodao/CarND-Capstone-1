@@ -2,12 +2,15 @@
 
 import rospy
 import numpy as np
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, TwistStamped
 from styx_msgs.msg import Lane, Waypoint
 from scipy.spatial import KDTree
 from std_msgs.msg import Int32
 
+from tf.transformations import euler_from_quaternion
+
 import math
+import numpy as np
 
 '''
 This node will publish waypoints from the car's current position to some `x` distance ahead.
@@ -34,6 +37,7 @@ class WaypointUpdater(object):
         rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
         rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
         rospy.Subscriber('/traffic_waypoint', Int32, self.traffic_cb)
+        rospy.Subscriber('/current_velocity', TwistStamped, self.velocity_cb)
         #rospy.Subscriber('/obstacle_waypoint', Int32, self.obstacle_wp_cp)
         # TODO: Add a subscriber for /traffic_waypoint and /obstacle_waypoint below
 
@@ -90,6 +94,8 @@ class WaypointUpdater(object):
         farthest_idx = closest_idx + LOOKAHEAD_WPS
         base_waypoints = self.base_lane.waypoints[closest_idx:farthest_idx]
 
+        # If no light detected, publish base_waypoints
+        print(self.stopline_wp_idx, farthest_idx)
         if (self.stopline_wp_idx == -1) or (self.stopline_wp_idx >= farthest_idx):
             lane.waypoints = base_waypoints
         else:
@@ -106,6 +112,7 @@ class WaypointUpdater(object):
 
             stop_idx = max(self.stopline_wp_idx - closest_idx - 2, 0) # 2 waypoints back from line so car stops at line
             dist = self.distance(waypoints, i, stop_idx)
+
             vel = math.sqrt(2 * MAX_DECEL * dist)
             if vel < 1.:
                 vel = 0.
@@ -114,6 +121,9 @@ class WaypointUpdater(object):
             temp.append(p)
 
         return temp
+
+    def velocity_cb(self, msg):
+        self.current_vel = msg.twist.linear.x
 
     def pose_cb(self, msg):
         self.pose = msg
