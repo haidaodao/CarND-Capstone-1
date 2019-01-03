@@ -7,7 +7,6 @@ from styx_msgs.msg import Lane, Waypoint
 from scipy.spatial import KDTree
 from std_msgs.msg import Int32
 
-from tf.transformations import euler_from_quaternion
 
 import math
 import numpy as np
