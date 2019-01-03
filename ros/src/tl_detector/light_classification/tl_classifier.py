@@ -19,36 +19,33 @@ class TLClassifier(object):
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
 
         """
-
-
         light = TrafficLight.UNKNOWN
         # HSV allows count color within hue range
         hsv_img = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-        RED_MIN1 = np.array([0, 100, 100], np.unit8)
-        RED_MAX1 = np.array([10, 255, 255], np.uint8)
+        RED1 = np.array([0, 100, 100], np.unit8)
+        RED2 = np.array([10, 255, 255], np.uint8)
+        RED3 = np.array([160, 100, 100], np.unit8)
+        RED4 = np.array([179, 255, 255], np.uint8)
 
-        RED_MIN2 = np.array([160, 100, 100], np.unit8)
-        RED_MAX2 = np.array([179, 255, 255], np.uint8)
+        YELLOW1 = np.array([40.0/360*255, 100, 100], np.unit8)
+        YELLOW2 = np.array([66.0/360*255, 255, 255], np.uint8)
 
-        red_mask1 = cv2.inRange(hsv_img, RED_MIN1, RED_MAX1)
-        red_mask2 = cv2.inRange(hsv_img, RED_MIN2, RED_MAX2)
+        GREEN1 = np.array([40.0/360*255, 100, 100], np.unit8)
+        GREEN2 = np.array([66.0/360*255, 255, 255], np.uint8)
+
+        red_mask1 = cv2.inRange(hsv_img, RED1, RED2)
+        red_mask2 = cv2.inRange(hsv_img, RED3, RED4)
         if cv2.countNonZero(red_mask1) + cvcv2.countNonZero(red_mask1) > 30:
             print("RED!")
             light = TrafficLight.RED
 
-        YELLOW_MIN = np.array([40.0/360*255, 100, 100], np.unit8)
-        YELLOW_MAX = np.array([66.0/360*255, 255, 255], np.uint8)
-
-        yellow_mask = cv2.inRange(hsv_img, YELLOW_MIN, YELLOW_MAX)
+        yellow_mask = cv2.inRange(hsv_img, YELLOW1, YELLOW2)
         if cv2.countNonZero(yellow_mask) > 30:
             print("YELLOW!")
             light = TrafficLight.YELLOW
 
-        GREEN_MIN = np.array([40.0/360*255, 100, 100], np.unit8)
-        GREEN_MAX = np.array([66.0/360*255, 255, 255], np.uint8)
-
-        green_mask = cv2.inRange(hsv_img, GREEN_MIN, GREEN_MAX)
+        green_mask = cv2.inRange(hsv_img, GREEN1, GREEN2)
         if cv2.countNonZero(green_mask) > 30:
             light = TrafficLight.GREEN
 
